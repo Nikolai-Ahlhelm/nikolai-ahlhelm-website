@@ -1,11 +1,13 @@
 services:
   postgres:
     image: postgres:16-alpine
+    profiles:
+      - local-db
     restart: unless-stopped
     environment:
       POSTGRES_DB: ${DATABASE_NAME:-strapi}
       POSTGRES_USER: ${DATABASE_USERNAME:-strapi}
-      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-strapi}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:?Set DATABASE_PASSWORD in .env}
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 10s
@@ -16,23 +18,18 @@ services:
 
   backend:
     image: ${BACKEND_IMAGE:-main-website-backend:local}
-    build:
-      context: ./backend
     restart: unless-stopped
-    depends_on:
-      postgres:
-        condition: service_healthy
     environment:
       NODE_ENV: production
       HOST: 0.0.0.0
       PORT: 1337
-      DATABASE_CLIENT: postgres
-      DATABASE_HOST: postgres
-      DATABASE_PORT: 5432
+      DATABASE_CLIENT: ${DATABASE_CLIENT:-postgres}
+      DATABASE_HOST: ${DATABASE_HOST:-postgres}
+      DATABASE_PORT: ${DATABASE_PORT:-5432}
       DATABASE_NAME: ${DATABASE_NAME:-strapi}
       DATABASE_USERNAME: ${DATABASE_USERNAME:-strapi}
       DATABASE_PASSWORD: ${DATABASE_PASSWORD:-strapi}
-      DATABASE_SSL: "false"
+      DATABASE_SSL: ${DATABASE_SSL:-false}
       APP_KEYS: ${APP_KEYS:?Set APP_KEYS in .env}
       API_TOKEN_SALT: ${API_TOKEN_SALT:?Set API_TOKEN_SALT in .env}
       ADMIN_JWT_SECRET: ${ADMIN_JWT_SECRET:?Set ADMIN_JWT_SECRET in .env}
@@ -46,12 +43,6 @@ services:
 
   frontend:
     image: ${FRONTEND_IMAGE:-main-website-frontend:local}
-    build:
-      context: ./frontend
-      args:
-        STRAPI_URL: ${STRAPI_URL:-http://backend:1337}
-        STRAPI_PUBLIC_URL: ${STRAPI_PUBLIC_URL:-http://localhost:1337}
-        STRAPI_HOME_SLUG: ${STRAPI_HOME_SLUG:-startseite}
     restart: unless-stopped
     depends_on:
       - backend
