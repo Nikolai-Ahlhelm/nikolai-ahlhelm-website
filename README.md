@@ -1,61 +1,39 @@
-# 🚀 Getting started with Strapi
+# Main Website
 
-Strapi comes with a full featured [Command Line Interface](https://docs.strapi.io/dev-docs/cli) (CLI) which lets you scaffold and manage your project in seconds.
+Monorepo for the Strapi backend and Next.js frontend.
 
-### `develop`
+## Structure
 
-Start your Strapi application with autoReload enabled. [Learn more](https://docs.strapi.io/dev-docs/cli#strapi-develop)
+- `backend/` contains the Strapi 5 application.
+- `frontend/` contains the Next.js application.
+- `docker-compose.yml` runs PostgreSQL, Strapi, and Next.js together.
+- `.github/workflows/docker-images.yml` builds and pushes both images to GHCR on pushes to `master`.
 
-```
-npm run develop
-# or
-yarn develop
-```
+## Local Docker Run
 
-### `start`
+Copy `.env.example` to `.env`, replace all placeholder secrets, then run:
 
-Start your Strapi application with autoReload disabled. [Learn more](https://docs.strapi.io/dev-docs/cli#strapi-start)
-
-```
-npm run start
-# or
-yarn start
+```bash
+docker compose build
+docker compose up -d
 ```
 
-### `build`
+Frontend: http://localhost:3000
 
-Build your admin panel. [Learn more](https://docs.strapi.io/dev-docs/cli#strapi-build)
+Strapi: http://localhost:1337
 
-```
-npm run build
-# or
-yarn build
-```
+## Production Image Pull
 
-## ⚙️ Deployment
+Set these values in `.env` on the server:
 
-Strapi gives you many possible deployment options for your project including [Strapi Cloud](https://cloud.strapi.io). Browse the [deployment section of the documentation](https://docs.strapi.io/dev-docs/deployment) to find the best solution for your use case.
-
-```
-yarn strapi deploy
+```bash
+BACKEND_IMAGE=ghcr.io/<owner>/<repo>/backend:latest
+FRONTEND_IMAGE=ghcr.io/<owner>/<repo>/frontend:latest
 ```
 
-## 📚 Learn more
+Then update the deployment with:
 
-- [Resource center](https://strapi.io/resource-center) - Strapi resource center.
-- [Strapi documentation](https://docs.strapi.io) - Official Strapi documentation.
-- [Strapi tutorials](https://strapi.io/tutorials) - List of tutorials made by the core team and the community.
-- [Strapi blog](https://strapi.io/blog) - Official Strapi blog containing articles made by the Strapi team and the community.
-- [Changelog](https://strapi.io/changelog) - Find out about the Strapi product updates, new features and general improvements.
-
-Feel free to check out the [Strapi GitHub repository](https://github.com/strapi/strapi). Your feedback and contributions are welcome!
-
-## ✨ Community
-
-- [Discord](https://discord.strapi.io) - Come chat with the Strapi community including the core team.
-- [Forum](https://forum.strapi.io/) - Place to discuss, ask questions and find answers, show your Strapi project and get feedback or just talk with other Community members.
-- [Awesome Strapi](https://github.com/strapi/awesome-strapi) - A curated list of awesome things related to Strapi.
-
----
-
-<sub>🤫 Psst! [Strapi is hiring](https://strapi.io/careers).</sub>
+```bash
+docker compose pull
+docker compose up -d
+```

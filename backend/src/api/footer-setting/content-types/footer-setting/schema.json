@@ -1,0 +1,24 @@
+{
+  "kind": "singleType",
+  "collectionName": "footer_settings",
+  "info": {
+    "singularName": "footer-setting",
+    "pluralName": "footer-settings",
+    "displayName": "Footer Setting"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "copyrightText": {
+      "type": "text",
+      "default": "© Nikolai Ahlhelm | 2026",
+      "required": true
+    },
+    "additionalText": {
+      "type": "richtext",
+      "default": "This is additional footer text"
+    }
+  }
+}

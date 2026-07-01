@@ -80,10 +80,20 @@ $RECYCLE.BIN/
 ssl
 .idea
 nbproject
-public/uploads/*
-!public/uploads/.gitkeep
+backend/public/uploads/*
+!backend/public/uploads/.gitkeep
 .tsbuildinfo
 .eslintcache
+next-env.d.ts
+
+############################
+# Environment files
+############################
+
+.env*
+!.env.example
+!**/.env.example
+!**/.env.local.example
 
 ############################
 # Node.js
@@ -121,7 +131,6 @@ coverage
 # Strapi
 ############################
 
-.env
 license.txt
 exports
 .strapi
@@ -129,3 +138,16 @@ dist
 build
 .strapi-updater.json
 .strapi-cloud.json
+
+############################
+# Next.js
+############################
+
+.next
+out
+
+############################
+# Docker
+############################
+
+.docker

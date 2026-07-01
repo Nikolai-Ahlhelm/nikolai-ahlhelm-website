@@ -1,0 +1,296 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --background: #eef2f6;
+  --foreground: #18181b;
+  --surface: color-mix(in srgb, #ffffff 76%, transparent);
+  --surface-muted: color-mix(in srgb, #ffffff 48%, transparent);
+  --surface-hover: color-mix(in srgb, #ffffff 62%, transparent);
+  --border: color-mix(in srgb, #ffffff 62%, #8b95a5 38%);
+  --text-strong: #18181b;
+  --text-muted: #5f6068;
+  --accent: #2563eb;
+  --accent-soft: #dbeafe;
+  --glass-shadow:
+    0 28px 80px color-mix(in srgb, #64748b 20%, transparent),
+    0 8px 22px color-mix(in srgb, #64748b 10%, transparent);
+  --glass-highlight:
+    inset 0 1px 0 color-mix(in srgb, #ffffff 86%, transparent),
+    inset 0 0 0 1px color-mix(in srgb, #ffffff 30%, transparent);
+}
+
+html.dark {
+  --background: #080a10;
+  --foreground: #f4f4f5;
+  --surface: color-mix(in srgb, #181c26 72%, transparent);
+  --surface-muted: color-mix(in srgb, #111520 56%, transparent);
+  --surface-hover: color-mix(in srgb, #252b38 68%, transparent);
+  --border: color-mix(in srgb, #ffffff 12%, #64748b 26%);
+  --text-strong: #fafafa;
+  --text-muted: #a1a1aa;
+  --accent: #93c5fd;
+  --accent-soft: #1e3a8a;
+  --glass-shadow:
+    0 28px 90px color-mix(in srgb, #000000 48%, transparent),
+    0 8px 26px color-mix(in srgb, #000000 32%, transparent);
+  --glass-highlight:
+    inset 0 1px 0 color-mix(in srgb, #ffffff 18%, transparent),
+    inset 0 0 0 1px color-mix(in srgb, #ffffff 7%, transparent);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--accent-soft) 78%, transparent) 0%, transparent 34%),
+    linear-gradient(215deg, color-mix(in srgb, #f8fafc 88%, transparent) 0%, transparent 46%),
+    linear-gradient(180deg, var(--background) 0%, color-mix(in srgb, var(--background) 92%, #ffffff 8%) 100%);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  min-height: 100vh;
+}
+
+html.dark body {
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--accent-soft) 38%, transparent) 0%, transparent 38%),
+    linear-gradient(215deg, color-mix(in srgb, #334155 22%, transparent) 0%, transparent 48%),
+    linear-gradient(180deg, var(--background) 0%, #05060a 100%);
+  color: var(--foreground);
+}
+
+body::before {
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--accent) 18%, transparent) 1px, transparent 1px),
+    linear-gradient(180deg, color-mix(in srgb, var(--accent) 14%, transparent) 1px, transparent 1px);
+  background-position: top right;
+  background-size: 64px 64px;
+  content: "";
+  height: min(42rem, 70vh);
+  inset: 0 0 auto 0;
+  mask-image:
+    radial-gradient(ellipse at 82% 0%, black 0%, black 28%, transparent 68%),
+    linear-gradient(to bottom, black, transparent 82%);
+  opacity: 0.42;
+  pointer-events: none;
+  position: fixed;
+  z-index: -1;
+}
+
+html.dark body::before {
+  background:
+    linear-gradient(90deg, color-mix(in srgb, #ffffff 30%, transparent) 1px, transparent 1px),
+    linear-gradient(180deg, color-mix(in srgb, #ffffff 24%, transparent) 1px, transparent 1px);
+  background-position: top right;
+  background-size: 72px 72px;
+  opacity: 0.08;
+}
+
+.glass-panel {
+  background:
+    linear-gradient(145deg, color-mix(in srgb, #ffffff 18%, transparent), transparent 42%),
+    var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--glass-shadow), var(--glass-highlight);
+  backdrop-filter: blur(28px) saturate(1.28);
+  -webkit-backdrop-filter: blur(28px) saturate(1.28);
+}
+
+.glass-panel-muted {
+  background:
+    linear-gradient(145deg, color-mix(in srgb, #ffffff 13%, transparent), transparent 46%),
+    var(--surface-muted);
+  border: 1px solid var(--border);
+  box-shadow: var(--glass-shadow), var(--glass-highlight);
+  backdrop-filter: blur(22px) saturate(1.2);
+  -webkit-backdrop-filter: blur(22px) saturate(1.2);
+}
+
+.site-shell {
+  margin-inline: auto;
+  width: min(60vw, calc(100vw - 2rem));
+}
+
+@media (max-width: 900px) {
+  .site-shell {
+    width: min(100% - 1.5rem, 44rem);
+  }
+}
+
+::selection {
+  background: var(--accent-soft);
+  color: var(--text-strong);
+}
+
+.content {
+  color: var(--foreground);
+}
+
+.dark .content {
+  color: var(--foreground);
+}
+
+.content > * + * {
+  margin-top: 1.25rem;
+}
+
+.content figure,
+.content .table {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.content h1,
+.content h2,
+.content h3,
+.content h4,
+.content h5,
+.content h6 {
+  color: #18181b;
+  font-weight: 650;
+  letter-spacing: 0;
+  line-height: 1.12;
+}
+
+.content h1,
+.content h2,
+.content h3,
+.content h4,
+.content h5,
+.content h6 {
+  color: var(--text-strong);
+}
+
+.dark .content h1,
+.dark .content h2,
+.dark .content h3,
+.dark .content h4,
+.dark .content h5,
+.dark .content h6 {
+  color: #fafafa;
+}
+
+.content h1 {
+  font-size: clamp(2.5rem, 7vw, 4.75rem);
+  line-height: 0.98;
+}
+
+.content h2 {
+  font-size: clamp(2rem, 5vw, 3rem);
+}
+
+.content h3 {
+  font-size: clamp(1.5rem, 4vw, 2.25rem);
+}
+
+.content h4 {
+  font-size: 1.35rem;
+}
+
+.content h5,
+.content h6 {
+  font-size: 1.1rem;
+}
+
+.content p,
+.content li,
+.content td,
+.content th,
+.content blockquote {
+  font-size: 1.125rem;
+  line-height: 1.8;
+}
+
+.content a {
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.18em;
+}
+
+.dark .content a {
+  color: var(--accent);
+}
+
+.content strong {
+  color: var(--text-strong);
+  font-weight: 700;
+}
+
+.dark .content strong {
+  color: #fafafa;
+}
+
+.content code {
+  border-radius: 0.25rem;
+  background: var(--surface-muted);
+  padding: 0.1rem 0.25rem;
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 0.95em;
+}
+
+.dark .content code {
+  background: var(--surface-hover);
+  color: var(--foreground);
+}
+
+.content ul,
+.content ol {
+  padding-left: 1.4rem;
+}
+
+.content ul {
+  list-style: disc;
+}
+
+.content ol {
+  list-style: decimal;
+}
+
+.content hr {
+  border: 0;
+  border-top: 1px solid var(--border);
+  margin: 2rem 0;
+}
+
+.content table {
+  border-collapse: collapse;
+  min-width: 36rem;
+  width: 100%;
+}
+
+.content th,
+.content td {
+  border: 1px solid var(--border);
+  padding: 0.75rem 0.9rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+.content th {
+  background: var(--surface-muted);
+  color: var(--text-strong);
+  font-weight: 650;
+}
+
+.content td {
+  background: color-mix(in srgb, var(--surface) 64%, transparent);
+}
+
+.content blockquote {
+  border-left: 0.25rem solid var(--accent);
+  color: var(--text-muted);
+  padding-left: 1rem;
+}
+
+.dark .content blockquote {
+  border-left-color: var(--accent);
+  color: var(--text-muted);
+}

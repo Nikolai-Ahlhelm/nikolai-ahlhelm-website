@@ -1,0 +1,14 @@
+.env
+.strapi
+.strapi-updater.json
+.strapi-cloud.json
+build
+dist
+exports
+node_modules
+npm-debug.log*
+.tmp
+*.sqlite
+*.sqlite3
+public/uploads/*
+!public/uploads/.gitkeep

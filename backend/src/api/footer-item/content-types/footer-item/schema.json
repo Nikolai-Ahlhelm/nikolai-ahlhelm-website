@@ -1,0 +1,29 @@
+{
+  "kind": "collectionType",
+  "collectionName": "footer_items",
+  "info": {
+    "singularName": "footer-item",
+    "pluralName": "footer-items",
+    "displayName": "Footer Item"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "label": {
+      "type": "string",
+      "required": true
+    },
+    "link": {
+      "type": "string",
+      "required": true
+    },
+    "priority": {
+      "type": "integer",
+      "required": true,
+      "default": 0,
+      "min": 0
+    }
+  }
+}
