@@ -57,12 +57,44 @@ body {
   min-height: 100vh;
 }
 
+body.has-shader-background {
+  background: #000000;
+}
+
+body.has-custom-background {
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--accent-soft) 78%, transparent) 0%, transparent 34%),
+    linear-gradient(215deg, color-mix(in srgb, #f8fafc 88%, transparent) 0%, transparent 46%),
+    linear-gradient(180deg, color-mix(in srgb, var(--site-background-overlay-color-light, var(--background)) var(--site-background-overlay-opacity-light, 65%), transparent) 0%, color-mix(in srgb, var(--site-background-overlay-color-light, var(--background)) var(--site-background-overlay-opacity-light, 65%), transparent) 100%),
+    var(--site-background-image-light);
+  background-attachment: scroll, scroll, scroll, fixed;
+  background-position: center, center, center, center;
+  background-repeat: no-repeat;
+  background-size: auto, auto, auto, cover;
+}
+
 html.dark body {
   background:
     linear-gradient(135deg, color-mix(in srgb, var(--accent-soft) 38%, transparent) 0%, transparent 38%),
     linear-gradient(215deg, color-mix(in srgb, #334155 22%, transparent) 0%, transparent 48%),
     linear-gradient(180deg, var(--background) 0%, #05060a 100%);
   color: var(--foreground);
+}
+
+html.dark body.has-shader-background {
+  background: #000000;
+}
+
+html.dark body.has-custom-background {
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--accent-soft) 38%, transparent) 0%, transparent 38%),
+    linear-gradient(215deg, color-mix(in srgb, #334155 22%, transparent) 0%, transparent 48%),
+    linear-gradient(180deg, color-mix(in srgb, var(--site-background-overlay-color-dark, #05060a) var(--site-background-overlay-opacity-dark, 75%), transparent) 0%, color-mix(in srgb, var(--site-background-overlay-color-dark, #05060a) var(--site-background-overlay-opacity-dark, 75%), transparent) 100%),
+    var(--site-background-image-dark);
+  background-attachment: scroll, scroll, scroll, fixed;
+  background-position: center, center, center, center;
+  background-repeat: no-repeat;
+  background-size: auto, auto, auto, cover;
 }
 
 body::before {
@@ -83,6 +115,14 @@ body::before {
   z-index: -1;
 }
 
+body.has-custom-background::before {
+  opacity: 0.24;
+}
+
+body.has-shader-background::before {
+  opacity: 0 !important;
+}
+
 html.dark body::before {
   background:
     linear-gradient(90deg, color-mix(in srgb, #ffffff 30%, transparent) 1px, transparent 1px),
@@ -90,6 +130,24 @@ html.dark body::before {
   background-position: top right;
   background-size: 72px 72px;
   opacity: 0.08;
+}
+
+html.dark body.has-custom-background::before {
+  opacity: 0.06;
+}
+
+html.dark body.has-shader-background::before {
+  opacity: 0 !important;
+}
+
+.shader-background {
+  height: 100vh;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  position: fixed;
+  width: 100vw;
+  z-index: -2;
 }
 
 .glass-panel {

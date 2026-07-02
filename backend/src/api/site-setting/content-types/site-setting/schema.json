@@ -31,12 +31,56 @@
       "relation": "oneToOne",
       "target": "api::page.page"
     },
+    "backgroundMode": {
+      "type": "enumeration",
+      "required": true,
+      "default": "image",
+      "enum": [
+        "default",
+        "image",
+        "shader"
+      ]
+    },
+    "backgroundImageLight": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "backgroundImageDark": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
     "favicon": {
       "type": "media",
       "multiple": false,
       "allowedTypes": [
         "images"
       ]
+    },
+    "backgroundOverlayColorLight": {
+      "type": "customField",
+      "customField": "plugin::advanced-fields.color"
+    },
+    "backgroundOverlayColorDark": {
+      "type": "customField",
+      "customField": "plugin::advanced-fields.color"
+    },
+    "backgroundOverlayTransparencyLight": {
+      "type": "decimal",
+      "default": 0.35,
+      "min": 0,
+      "max": 1
+    },
+    "backgroundOverlayTransparencyDark": {
+      "type": "decimal",
+      "default": 0.25,
+      "min": 0,
+      "max": 1
     }
   }
 }

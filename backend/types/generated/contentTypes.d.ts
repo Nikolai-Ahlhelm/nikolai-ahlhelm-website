@@ -600,6 +600,35 @@ export interface ApiSiteSettingSiteSetting extends Struct.SingleTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
+    backgroundImageDark: Schema.Attribute.Media<'images'>;
+    backgroundImageLight: Schema.Attribute.Media<'images'>;
+    backgroundMode: Schema.Attribute.Enumeration<
+      ['default', 'image', 'shader']
+    > &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'image'>;
+    backgroundOverlayColorDark: Schema.Attribute.String &
+      Schema.Attribute.CustomField<'plugin::advanced-fields.color'>;
+    backgroundOverlayColorLight: Schema.Attribute.String &
+      Schema.Attribute.CustomField<'plugin::advanced-fields.color'>;
+    backgroundOverlayTransparencyDark: Schema.Attribute.Decimal &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 1;
+          min: 0;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<0.25>;
+    backgroundOverlayTransparencyLight: Schema.Attribute.Decimal &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 1;
+          min: 0;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<0.35>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;

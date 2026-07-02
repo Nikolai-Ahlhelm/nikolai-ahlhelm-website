@@ -3,6 +3,7 @@ const STRAPI_PUBLIC_URL = process.env.STRAPI_PUBLIC_URL ?? STRAPI_URL;
 const STRAPI_API_TOKEN = process.env.STRAPI_API_TOKEN;
 
 export type ThemePreference = "system" | "light" | "dark";
+export type BackgroundMode = "default" | "image" | "shader";
 
 export type StrapiTextNode = {
   type: "text";
@@ -81,6 +82,14 @@ export type SiteSettings = {
   siteName: string;
   defaultTheme: ThemePreference;
   defaultPage: Page | null;
+  backgroundImage?: StrapiMedia | null;
+  backgroundImageDark: StrapiMedia | null;
+  backgroundImageLight: StrapiMedia | null;
+  backgroundMode: BackgroundMode;
+  backgroundOverlayColorDark: string | null;
+  backgroundOverlayColorLight: string | null;
+  backgroundOverlayTransparencyDark: number | string | null;
+  backgroundOverlayTransparencyLight: number | string | null;
   favicon: StrapiMedia | null;
   publishedAt: string | null;
 };
@@ -160,7 +169,11 @@ async function optionalStrapiFetch<T>(
 ): Promise<T> {
   try {
     return await strapiFetch<T>(path);
-  } catch {
+  } catch (error) {
+    if (process.env.NODE_ENV !== "production") {
+      console.warn(`Optional Strapi request failed for ${path}:`, error);
+    }
+
     return fallback;
   }
 }
@@ -265,9 +278,28 @@ export function getHomeSlug() {
 
 export function getDefaultSiteSettings(): Pick<
   SiteSettings,
-  "defaultPage" | "defaultTheme" | "favicon" | "siteName"
+  | "backgroundImage"
+  | "backgroundImageDark"
+  | "backgroundImageLight"
+  | "backgroundMode"
+  | "backgroundOverlayColorDark"
+  | "backgroundOverlayColorLight"
+  | "backgroundOverlayTransparencyDark"
+  | "backgroundOverlayTransparencyLight"
+  | "defaultPage"
+  | "defaultTheme"
+  | "favicon"
+  | "siteName"
 > {
   return {
+    backgroundImage: null,
+    backgroundImageDark: null,
+    backgroundImageLight: null,
+    backgroundMode: "image",
+    backgroundOverlayColorDark: null,
+    backgroundOverlayColorLight: null,
+    backgroundOverlayTransparencyDark: 0.25,
+    backgroundOverlayTransparencyLight: 0.35,
     defaultPage: null,
     defaultTheme: "system",
     favicon: null,

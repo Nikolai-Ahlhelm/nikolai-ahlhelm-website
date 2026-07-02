@@ -14,7 +14,8 @@ frontend, and PostgreSQL for Docker-based deployments.
 
 ## Requirements
 
-- Node.js 20 to 26 for local development.
+- Node.js 20, 22, or 24 for local development. Node 22 LTS is the safest
+  choice for the Strapi backend on Windows.
 - npm.
 - Docker and Docker Compose for the production-like local setup.
 
@@ -107,7 +108,10 @@ Postgres server.
 The frontend currently reads these Strapi entries:
 
 - `Page`: `title`, `slug`, `content`, `seoTitle`, `seoDescription`.
-- `Site Setting`: `siteName`, `defaultTheme`, `defaultPage`, `favicon`.
+- `Site Setting`: `siteName`, `defaultTheme`, `defaultPage`, `favicon`,
+  `backgroundMode`, `backgroundImageLight`, `backgroundImageDark`,
+  `backgroundOverlayColorLight`, `backgroundOverlayColorDark`,
+  `backgroundOverlayTransparencyLight`, `backgroundOverlayTransparencyDark`.
 - `Nav Item`: `label`, `url`, `priority`, `isExternal`, and optional nested
   child items.
 - `Footer Setting`: `copyrightText`, `additionalText`.
@@ -173,6 +177,26 @@ On Windows PowerShell, this command generates one suitable base64 value:
 ```powershell
 $bytes = [byte[]]::new(32); [System.Security.Cryptography.RandomNumberGenerator]::Fill($bytes); [Convert]::ToBase64String($bytes)
 ```
+
+### Windows Backend Troubleshooting
+
+If the backend does not start after cloning on Windows, first confirm that
+Node.js is within the supported backend range (`>=20 <=24`; Node 22 LTS is
+recommended on Windows) and that `backend/.env` exists:
+
+```powershell
+cd backend
+Copy-Item .env.example .env
+npm install
+npm run dev
+```
+
+For standalone local development, the backend uses SQLite by default. If
+`better-sqlite3` fails during install, keep the committed lockfile and retry
+with Node 22 LTS before rebuilding native modules. Visual Studio Build Tools
+are only needed when npm cannot use a prebuilt binary. If you want an
+environment closer to deployment, use the Docker Compose setup from the
+repository root instead; it runs Strapi against PostgreSQL.
 
 ## Useful Commands
 
