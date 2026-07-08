@@ -30,6 +30,48 @@ function applyTheme(theme: Theme) {
   document.documentElement.style.colorScheme = theme;
 }
 
+function SunIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      className="size-4"
+      fill="none"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="2"
+      viewBox="0 0 24 24"
+    >
+      <circle cx="12" cy="12" r="4" />
+      <path d="M12 2v2" />
+      <path d="M12 20v2" />
+      <path d="m4.93 4.93 1.41 1.41" />
+      <path d="m17.66 17.66 1.41 1.41" />
+      <path d="M2 12h2" />
+      <path d="M20 12h2" />
+      <path d="m6.34 17.66-1.41 1.41" />
+      <path d="m19.07 4.93-1.41 1.41" />
+    </svg>
+  );
+}
+
+function MoonIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      className="size-4"
+      fill="none"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="2"
+      viewBox="0 0 24 24"
+    >
+      <path d="M12 3a6 6 0 0 0 9 7.2A9 9 0 1 1 12 3Z" />
+    </svg>
+  );
+}
+
 export function ThemeToggle({
   defaultTheme = "system",
 }: {
@@ -55,32 +97,26 @@ export function ThemeToggle({
     window.localStorage.setItem("theme", nextTheme);
   }
 
-  return (
-    <div
-      aria-label="Farbschema"
-      className="grid h-9 grid-cols-2 rounded-xl border border-[var(--border)] bg-[var(--surface-muted)] p-0.5 text-xs font-medium text-[var(--text-muted)] shadow-sm backdrop-blur"
-      role="group"
-      suppressHydrationWarning
-    >
-      {(["light", "dark"] as const).map((option) => {
-        const isActive = isMounted && theme === option;
+  const nextTheme: Theme = theme === "dark" ? "light" : "dark";
+  const label =
+    theme === "dark" ? "Switch to light mode" : "Switch to dark mode";
 
-        return (
-          <button
-            aria-pressed={isActive}
-            className={`rounded-lg px-3 transition ${
-              isActive
-                ? "bg-[var(--surface)] text-[var(--text-strong)] shadow-sm"
-                : "hover:text-[var(--text-strong)]"
-            }`}
-            key={option}
-            onClick={() => updateTheme(option)}
-            type="button"
-          >
-            {option === "light" ? "Hell" : "Dunkel"}
-          </button>
-        );
-      })}
-    </div>
+  return (
+    <button
+      aria-label={label}
+      className="grid size-10 place-items-center rounded-xl border border-[var(--border)] bg-[var(--surface-muted)] text-[var(--text-muted)] shadow-sm backdrop-blur transition duration-200 hover:-translate-y-0.5 hover:bg-[var(--surface-hover)] hover:text-[var(--text-strong)]"
+      onClick={() => updateTheme(nextTheme)}
+      suppressHydrationWarning
+      title={label}
+      type="button"
+    >
+      <span
+        className={`transition duration-200 ${
+          isMounted ? "scale-100 opacity-100" : "scale-90 opacity-0"
+        }`}
+      >
+        {theme === "dark" ? <MoonIcon /> : <SunIcon />}
+      </span>
+    </button>
   );
 }

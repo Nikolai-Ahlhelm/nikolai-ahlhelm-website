@@ -1,0 +1,34 @@
+{
+  "kind": "collectionType",
+  "collectionName": "access_groups",
+  "info": {
+    "singularName": "access-group",
+    "pluralName": "access-groups",
+    "displayName": "Access Group"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "key": {
+      "type": "uid",
+      "targetField": "name"
+    },
+    "users": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "plugin::users-permissions.user"
+    },
+    "pages": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::page.page",
+      "mappedBy": "allowedGroups"
+    }
+  }
+}

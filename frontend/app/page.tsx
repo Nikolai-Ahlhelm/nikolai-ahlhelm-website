@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { StrapiBlocks } from "@/components/strapi-blocks";
+import { canAccessPage, needsLoginForPage } from "@/lib/access";
+import { getCurrentUser } from "@/lib/auth";
 import {
   getDefaultSiteSettings,
   getHomeSlug,
@@ -14,7 +16,7 @@ async function getHomePage() {
   const settings = (await getSiteSettings()) ?? getDefaultSiteSettings();
 
   if (settings.defaultPage?.slug) {
-    return settings.defaultPage;
+    return getPageBySlug(settings.defaultPage.slug);
   }
 
   return getPageBySlug(getHomeSlug());
@@ -23,7 +25,7 @@ async function getHomePage() {
 export async function generateMetadata(): Promise<Metadata> {
   const page = await getHomePage();
 
-  if (!page) {
+  if (!page || page.accessLevel === "restricted") {
     return {};
   }
 
@@ -34,10 +36,18 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Home() {
-  const page = await getHomePage();
+  const [page, user] = await Promise.all([getHomePage(), getCurrentUser()]);
 
   if (!page) {
     notFound();
+  }
+
+  if (needsLoginForPage(page, user)) {
+    redirect("/login?next=/");
+  }
+
+  if (!canAccessPage(page, user)) {
+    redirect("/forbidden");
   }
 
   return (

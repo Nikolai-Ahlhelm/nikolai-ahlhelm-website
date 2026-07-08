@@ -1,16 +1,23 @@
 import Link from "next/link";
 import type { NavItem } from "@/lib/strapi";
+import { canAccessPage } from "@/lib/access";
+import { getCurrentUser } from "@/lib/auth";
 import {
   getDefaultSiteSettings,
+  getHomeSlug,
   getNavItems,
+  getPages,
   getSiteSettings,
 } from "@/lib/strapi";
+import { ProfileMenu } from "./profile-menu";
 import { ThemeToggle } from "./theme-toggle";
 
 type HeaderItem = Pick<
   NavItem,
-  "documentId" | "isExternal" | "label" | "nav_items" | "priority" | "url"
->;
+  "documentId" | "isExternal" | "label" | "priority" | "url"
+> & {
+  nav_items?: HeaderItem[];
+};
 
 function getInternalUrl(url: string) {
   if (url.startsWith("/") || url.startsWith("#")) {
@@ -23,6 +30,44 @@ function getInternalUrl(url: string) {
 function sortByPriority(items: HeaderItem[]) {
   return [...items].sort((firstItem, secondItem) => {
     return (firstItem.priority ?? 0) - (secondItem.priority ?? 0);
+  });
+}
+
+function getNavPath(item: HeaderItem) {
+  if (item.isExternal || item.url.startsWith("#")) {
+    return null;
+  }
+
+  return getInternalUrl(item.url).replace(/\/+$/, "") || "/";
+}
+
+function filterNavItemsByAccess(
+  items: HeaderItem[],
+  pageAccessByPath: Map<string, boolean>,
+): HeaderItem[] {
+  return items.flatMap((item) => {
+    const children = filterNavItemsByAccess(
+      item.nav_items ?? [],
+      pageAccessByPath,
+    );
+    const navPath = getNavPath(item);
+    const pageAccess = navPath ? pageAccessByPath.get(navPath) : undefined;
+    const shouldKeep =
+      !navPath ||
+      pageAccess === undefined ||
+      pageAccess ||
+      children.length > 0;
+
+    if (!shouldKeep) {
+      return [];
+    }
+
+    return [
+      {
+        ...item,
+        nav_items: children,
+      },
+    ];
   });
 }
 
@@ -88,12 +133,27 @@ function NavItemWithDropdown({ item }: { item: HeaderItem }) {
 }
 
 export async function SiteHeader() {
-  const [settings, navItems] = await Promise.all([
+  const [settings, navItems, pages, user] = await Promise.all([
     getSiteSettings(),
     getNavItems(),
+    getPages().catch(() => []),
+    getCurrentUser(),
   ]);
   const { defaultTheme, siteName } = settings ?? getDefaultSiteSettings();
-  const topLevelNavItems = navItems.filter((item) => !item.nav_item);
+  const homeSlug =
+    settings?.defaultPage?.slug ??
+    getDefaultSiteSettings().defaultPage?.slug ??
+    getHomeSlug();
+  const pageAccessByPath = new Map(
+    pages.map((page) => [
+      page.slug === homeSlug ? "/" : `/${page.slug}`,
+      canAccessPage(page, user),
+    ]),
+  );
+  const topLevelNavItems = filterNavItemsByAccess(
+    navItems.filter((item) => !item.nav_item),
+    pageAccessByPath,
+  );
   const items = sortByPriority(topLevelNavItems);
 
   return (
@@ -110,7 +170,7 @@ export async function SiteHeader() {
         </Link>
         <div className="flex flex-wrap items-center gap-3">
           <nav
-            aria-label="Hauptnavigation"
+            aria-label="Main navigation"
             className="flex flex-wrap gap-1 text-sm"
           >
             {items.map((item) => (
@@ -118,6 +178,16 @@ export async function SiteHeader() {
             ))}
           </nav>
           <ThemeToggle defaultTheme={defaultTheme} />
+          {user ? (
+            <ProfileMenu user={user} />
+          ) : (
+            <Link
+              className="rounded-xl px-3 py-2 text-sm font-semibold text-[var(--text-muted)] transition hover:bg-[var(--surface-hover)] hover:text-[var(--text-strong)]"
+              href="/login"
+            >
+              Login
+            </Link>
+          )}
         </div>
       </div>
     </header>

@@ -8,13 +8,13 @@ export default function NotFound() {
           Seite nicht gefunden
         </h1>
         <p className="mt-4 text-lg leading-8 text-[var(--text-muted)]">
-          Diese Seite existiert in Strapi nicht oder ist noch nicht veröffentlicht.
+          This page does not exist in Strapi or has not been published yet.
         </p>
         <Link
           className="mt-8 w-fit rounded-xl bg-[var(--text-strong)] px-4 py-2 text-[var(--background)] transition opacity-100 hover:opacity-80"
           href="/"
         >
-          Zur Startseite
+          Back to home
         </Link>
       </div>
     </main>

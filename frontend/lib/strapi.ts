@@ -4,6 +4,7 @@ const STRAPI_API_TOKEN = process.env.STRAPI_API_TOKEN;
 
 export type ThemePreference = "system" | "light" | "dark";
 export type BackgroundMode = "default" | "image" | "shader";
+export type AccessLevel = "public" | "authenticated" | "restricted";
 
 export type StrapiTextNode = {
   type: "text";
@@ -50,7 +51,25 @@ export type Page = {
   content: StrapiBlock[] | string | null;
   seoTitle: string | null;
   seoDescription: string | null;
+  accessLevel: AccessLevel;
+  allowedUsers?: AccessUser[];
+  allowedGroups?: AccessGroup[];
   publishedAt: string | null;
+};
+
+export type AccessUser = {
+  id: number;
+  documentId: string;
+  username: string;
+  email: string;
+};
+
+export type AccessGroup = {
+  id: number;
+  documentId: string;
+  name: string;
+  key: string | null;
+  users?: AccessUser[];
 };
 
 export type NavItem = {
@@ -128,6 +147,16 @@ type StrapiSingleResponse<T> = {
   meta: Record<string, unknown>;
 };
 
+class StrapiFetchError extends Error {
+  constructor(
+    message: string,
+    public readonly status: number,
+  ) {
+    super(message);
+    this.name = "StrapiFetchError";
+  }
+}
+
 function getStrapiUrl(path: string) {
   const url = new URL(path, STRAPI_URL);
   return url.toString();
@@ -155,8 +184,9 @@ async function strapiFetch<T>(path: string, init?: RequestInit): Promise<T> {
   });
 
   if (!response.ok) {
-    throw new Error(
+    throw new StrapiFetchError(
       `Strapi request failed: ${response.status} ${response.statusText}`,
+      response.status,
     );
   }
 
@@ -170,6 +200,10 @@ async function optionalStrapiFetch<T>(
   try {
     return await strapiFetch<T>(path);
   } catch (error) {
+    if (error instanceof StrapiFetchError && error.status === 404) {
+      return fallback;
+    }
+
     if (process.env.NODE_ENV !== "production") {
       console.warn(`Optional Strapi request failed for ${path}:`, error);
     }
@@ -180,7 +214,7 @@ async function optionalStrapiFetch<T>(
 
 export async function getPages() {
   const response = await strapiFetch<StrapiCollectionResponse<Page>>(
-    "/api/pages?fields[0]=title&fields[1]=slug&fields[2]=seoTitle&fields[3]=seoDescription&sort=title:asc",
+    "/api/pages?fields[0]=title&fields[1]=slug&fields[2]=seoTitle&fields[3]=seoDescription&fields[4]=accessLevel&populate[allowedUsers][fields][0]=id&populate[allowedUsers][fields][1]=documentId&populate[allowedUsers][fields][2]=username&populate[allowedUsers][fields][3]=email&populate[allowedGroups][fields][0]=name&populate[allowedGroups][fields][1]=key&populate[allowedGroups][populate][users][fields][0]=id&populate[allowedGroups][populate][users][fields][1]=documentId&populate[allowedGroups][populate][users][fields][2]=username&populate[allowedGroups][populate][users][fields][3]=email&sort=title:asc",
   );
 
   return response.data;
@@ -254,7 +288,7 @@ export function getDefaultFooterSettings(): Pick<
   "additionalText" | "copyrightText"
 > {
   return {
-    additionalText: "Inhalte werden in Strapi gepflegt und von Next.js ausgeliefert.",
+    additionalText: "Content is managed in Strapi and delivered by Next.js.",
     copyrightText: `© ${new Date().getFullYear()} Main Website`,
   };
 }
@@ -262,7 +296,16 @@ export function getDefaultFooterSettings(): Pick<
 export async function getPageBySlug(slug: string) {
   const params = new URLSearchParams({
     "filters[slug][$eq]": slug,
-    populate: "*",
+    "populate[allowedUsers][fields][0]": "id",
+    "populate[allowedUsers][fields][1]": "documentId",
+    "populate[allowedUsers][fields][2]": "username",
+    "populate[allowedUsers][fields][3]": "email",
+    "populate[allowedGroups][fields][0]": "name",
+    "populate[allowedGroups][fields][1]": "key",
+    "populate[allowedGroups][populate][users][fields][0]": "id",
+    "populate[allowedGroups][populate][users][fields][1]": "documentId",
+    "populate[allowedGroups][populate][users][fields][2]": "username",
+    "populate[allowedGroups][populate][users][fields][3]": "email",
   });
 
   const response = await strapiFetch<StrapiCollectionResponse<Page>>(

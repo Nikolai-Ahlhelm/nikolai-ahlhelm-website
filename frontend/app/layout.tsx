@@ -119,7 +119,7 @@ export default async function RootLayout({
 
   return (
     <html
-      lang="de"
+      lang="en"
       className={`${geistSans.variable} ${geistMono.variable} ${jetbrainsMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >

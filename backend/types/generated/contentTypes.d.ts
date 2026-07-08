@@ -440,6 +440,40 @@ export interface AdminUser extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiAccessGroupAccessGroup extends Struct.CollectionTypeSchema {
+  collectionName: 'access_groups';
+  info: {
+    displayName: 'Access Group';
+    pluralName: 'access-groups';
+    singularName: 'access-group';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    key: Schema.Attribute.UID<'name'>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::access-group.access-group'
+    > &
+      Schema.Attribute.Private;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
+    pages: Schema.Attribute.Relation<'manyToMany', 'api::page.page'>;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    users: Schema.Attribute.Relation<
+      'manyToMany',
+      'plugin::users-permissions.user'
+    >;
+  };
+}
+
 export interface ApiFooterItemFooterItem extends Struct.CollectionTypeSchema {
   collectionName: 'footer_items';
   info: {
@@ -564,6 +598,19 @@ export interface ApiPagePage extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
+    accessLevel: Schema.Attribute.Enumeration<
+      ['public', 'authenticated', 'restricted']
+    > &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'public'>;
+    allowedGroups: Schema.Attribute.Relation<
+      'manyToMany',
+      'api::access-group.access-group'
+    >;
+    allowedUsers: Schema.Attribute.Relation<
+      'manyToMany',
+      'plugin::users-permissions.user'
+    >;
     content: Schema.Attribute.RichText &
       Schema.Attribute.Required &
       Schema.Attribute.CustomField<
@@ -1434,6 +1481,7 @@ declare module '@strapi/strapi' {
       'admin::transfer-token': AdminTransferToken;
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
+      'api::access-group.access-group': ApiAccessGroupAccessGroup;
       'api::footer-item.footer-item': ApiFooterItemFooterItem;
       'api::footer-setting.footer-setting': ApiFooterSettingFooterSetting;
       'api::nav-item.nav-item': ApiNavItemNavItem;

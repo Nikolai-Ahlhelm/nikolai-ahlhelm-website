@@ -31,6 +31,27 @@
     },
     "seoDescription": {
       "type": "string"
+    },
+    "accessLevel": {
+      "type": "enumeration",
+      "required": true,
+      "default": "public",
+      "enum": [
+        "public",
+        "authenticated",
+        "restricted"
+      ]
+    },
+    "allowedUsers": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "plugin::users-permissions.user"
+    },
+    "allowedGroups": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::access-group.access-group",
+      "inversedBy": "pages"
     }
   }
 }
